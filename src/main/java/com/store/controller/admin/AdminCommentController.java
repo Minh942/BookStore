@@ -1,0 +1,20 @@
+package com.store.controller.admin;
+
+import com.store.common.Constants;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class AdminCommentController {
+	
+	@GetMapping("/admin/comment/list/pending")
+	public String listPending(Model model) {
+		return Constants.USER_DISPLAY_ADMIN_COMMENT_PENDING;
+	}
+	
+	@GetMapping("/admin/comment/list/approved")
+	public String listApproved(Model model) {
+		return Constants.USER_DISPLAY_ADMIN_COMMENT_APPROVED;
+	}
+}
