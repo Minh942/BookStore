@@ -8,7 +8,6 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
-import com.store.entity.Discount;
 import com.store.model.CartModel;
 import com.store.service.ShoppingCartService;
 
@@ -17,8 +16,6 @@ import com.store.service.ShoppingCartService;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
 	public static Map<Integer, CartModel> map = new HashMap<>();
-
-	public static Map<Integer, Discount> mapDiscount = new HashMap<>();
 
 	@Override
 	public void add(Integer id, CartModel entity) {
@@ -31,11 +28,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 	}
 
 	@Override
-	public void addDiscount(Integer id, Discount entity) {
-		mapDiscount.put(id, entity);
-	}
-
-	@Override
 	public double getAmount() {
 		double amount = 0;
 		Set<Integer> set = map.keySet();
@@ -43,16 +35,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 			amount += map.get(i).getQuality() * map.get(i).getProduct().getPrice();
 		}
 
-		if (this.getDiscount() != null) {
-			try {
-				amount = amount - this.getDiscount().getPrice();
-			} catch (Exception e) {
-
-			}
-			System.out.println(amount);
-		}
-
 		return amount;
+	}
+
+	@Override
+	public void clearDiscount() {
+
 	}
 
 	@Override
@@ -87,27 +75,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
 	@Override
 	public int getCountAllProduct() {
-		int count = 0;
-		Set<Integer> set = map.keySet();
-		for (Integer i : set) {
-			count += map.get(i).getQuality();
-		}
-		return count;
-	}
-
-	@Override
-	public Discount getDiscount() {
-		Discount discount = new Discount();
-		Set<Integer> set = mapDiscount.keySet();
-		for (Integer i : set) {
-			discount = mapDiscount.get(i);
-		}
-		return discount;
-	}
-
-	@Override
-	public void clearDiscount() {
-		mapDiscount.clear();
+		return 10;
 	}
 
 }

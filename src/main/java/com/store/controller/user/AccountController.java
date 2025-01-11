@@ -10,11 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.store.entity.Favorite;
 import com.store.entity.Order;
 import com.store.model.AlertModel;
-import com.store.model.OrderModel;
-import com.store.service.FavoriteService;
 import com.store.service.OrderService;
 import com.store.service.ParamService;
 import com.store.service.UserService;
@@ -24,9 +21,6 @@ import com.store.service.impl.ShoppingCartServiceImpl;
 public class AccountController {
 	@Autowired
 	UserService userService;
-
-	@Autowired
-	FavoriteService favoriteService;
 
 	@Autowired
 	OrderService orderService;
@@ -49,34 +43,17 @@ public class AccountController {
 
 	@GetMapping("/account/favorite")
 	public String favorite(Model model) {
-
-		List<Favorite> listFavorite = favoriteService.getListFavoriteByEmail();
-
-		model.addAttribute("listFavorite", listFavorite);
 		return Constants.USER_DISPLAY_ACCOUNT_FAVORITE;
 	}
 
 	@GetMapping("/account/favorite/delete/{id}")
 	public String deleteFavorite(@PathVariable("id") int id, Model model) {
 
-		favoriteService.delete(id);
-
 		return "redirect:/account/favorite";
 	}
 
 	@GetMapping("/account/order")
 	public String order(Model model) {
-
-		List<OrderModel> listOrderHistory = orderService.listOrderHistory();
-
-		for (OrderModel list : listOrderHistory) {
-			Order order = orderService.getOrderByName(list.getId()).get(0);
-			if (order != null) {
-				list.setDiscount(order.getDiscount());
-			}
-		}
-
-		model.addAttribute("listOrder", listOrderHistory);
 
 		return Constants.USER_DISPLAY_ACCOUNT_ORDER;
 	}
@@ -91,9 +68,6 @@ public class AccountController {
 			int discount = 0;
 			for (Order order : list) {
 				total = total + order.getProduct().getPrice() * order.getQuality();
-			}
-			if (list.get(0).getDiscount() != null) {
-				discount = list.get(0).getDiscount().getPrice();
 			}
 			model.addAttribute("listProduct", list);
 			model.addAttribute("total", total);

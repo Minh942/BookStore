@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-@Entity
 public class BestSellerModel {
-	@Id
+
 	private Product product;
 	private long sum;
 }

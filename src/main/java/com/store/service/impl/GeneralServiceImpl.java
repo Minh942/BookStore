@@ -2,18 +2,12 @@ package com.store.service.impl;
 
 import java.sql.Timestamp;
 
-import com.store.dao.EmployeeDao;
-import com.store.dao.RoleDao;
 import com.store.dao.UserDao;
-import com.store.dao.UserRoleDao;
 import com.store.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.store.entity.Employee;
-import com.store.entity.Role;
-import com.store.entity.UserRole;
 import com.store.model.EmployeeForm;
 import com.store.service.GeneralService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,15 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class GeneralServiceImpl implements GeneralService {
 	@Autowired
     UserDao userDao;
-
-	@Autowired
-    RoleDao roleDao;
-
-	@Autowired
-    UserRoleDao userRoleDao;
-
-	@Autowired
-    EmployeeDao employeeDao;
 
 	@Override
 	public EmployeeForm createEmployee(EmployeeForm employeeForm) {
@@ -43,32 +28,9 @@ public class GeneralServiceImpl implements GeneralService {
 		user.setCreateday(timestamp.toString());
 		userDao.save(user);
 
-		// Tim thong tin role theo roleId
-		Role role = roleDao.findById(employeeForm.getRole()).get();
-
-		// Them moi mot user co vai tro la ROLE_USER
-		UserRole userRole = new UserRole();
-		userRole.setUser(user);
-		userRole.setRole(role);
-		userRoleDao.save(userRole);
-
 		// Them moi mot employee
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = ((UserDetails) principal).getUsername();
-
-		User temp = userDao.findUserByEmail(username);
-
-		Employee employee = new Employee();
-		employee.setDepartment(employeeForm.getDepartment());
-		employee.setPosition(employeeForm.getPosition());
-		employee.setPhone(employeeForm.getPhone());
-		employee.setStartday(employeeForm.getStartday());
-		employee.setSalary(employeeForm.getSalary());
-		employee.setCreateday(timestamp.toString());
-		employee.setUser(user);
-		employee.setPersoncreate(temp.getId());
-		employeeDao.save(employee);
-
 		return employeeForm;
 	}
 
@@ -79,18 +41,6 @@ public class GeneralServiceImpl implements GeneralService {
 		employeeForm.setFullname(user.getFullname());
 		employeeForm.setEmail(user.getEmail());
 
-		for (Employee employee : user.getListEmployee()) {
-			employeeForm.setDepartment(employee.getDepartment());
-			employeeForm.setPhone(employee.getPhone());
-			employeeForm.setSalary(employee.getSalary());
-			employeeForm.setPosition(employee.getPosition());
-			employeeForm.setStartday(employee.getStartday());
-		}
-
-		for (UserRole userRole : user.getListUserRole()) {
-			employeeForm.setRole(userRole.getRole().getId());
-		}
-
 		return employeeForm;
 	}
 
@@ -100,32 +50,12 @@ public class GeneralServiceImpl implements GeneralService {
 		User user = userDao.findById(employeeForm.getId()).get();
 		user.setEmail(employeeForm.getEmail());
 		user.setFullname(employeeForm.getFullname());
-		userDao.save(user);
 
-		// Cap nhat quyen user
-		UserRole userRole = roleDao.getRoleByUserId(employeeForm.getId());
-		Role role = roleDao.findById(employeeForm.getRole()).get();
-		userRole.setUser(user);
-		userRole.setRole(role);
-		userRoleDao.save(userRole);
-		
 		// Cap nhat employee
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = ((UserDetails) principal).getUsername();
-		User temp = userDao.findUserByEmail(username);
-		
-		Employee employee = employeeDao.getEmployeeByUserId(employeeForm.getId());
-		employee.setDepartment(employeeForm.getDepartment());
-		employee.setPosition(employeeForm.getPosition());
-		employee.setPhone(employeeForm.getPhone());
-		employee.setStartday(employeeForm.getStartday());
-		employee.setSalary(employeeForm.getSalary());
-		employee.setUpdateday(timestamp.toString());
-		employee.setUser(user);
-		employee.setPersonupdate(temp.getId());
-		employeeDao.save(employee);
-		
+
 		return employeeForm;
 	}
 

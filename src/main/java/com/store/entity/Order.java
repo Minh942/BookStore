@@ -37,11 +37,7 @@ public class Order implements Serializable{
 	@ManyToOne
 	@JoinColumn(name = "Product_Id")
 	Product product;
-	
-	// Thong tin ma giam gia
-	@ManyToOne
-	@JoinColumn(name = "Discount_Id")
-	Discount discount;
+
 	
 	// Thong tin so luong
 	private int quality;

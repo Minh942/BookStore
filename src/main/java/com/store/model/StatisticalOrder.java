@@ -10,9 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-@Entity
 public class StatisticalOrder {
-	@Id
 	private long count;
 }

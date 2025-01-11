@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.store.model.UserRegister;
 import com.store.service.UserService;
-import com.store.service.impl.MailerServiceImpl;
+//import com.store.service.impl.MailerServiceImpl;
 
 @Controller
 public class ForgetPasswordController {
 	
 	@Autowired
 	UserService userService;
-	
-	@Autowired
-	MailerServiceImpl mailerService;
+//
+//	@Autowired
+//	MailerServiceImpl mailerService;
 	
 	@Autowired
 	PasswordEncoder pe;
@@ -53,7 +53,7 @@ public class ForgetPasswordController {
 			}
 			else {
 				String password = pe.encode(user.getPassword());
-				mailerService.queue(userForm.getEmail(), "Làm mới mật khẩu!", "Vui lòng click vào link này: "+ "http://localhost:8080/reset-password?code="+password+"&email="+user.getEmail() +" để reset mật khẩu.");
+//				mailerService.queue(userForm.getEmail(), "Làm mới mật khẩu!", "Vui lòng click vào link này: "+ "http://localhost:8080/reset-password?code="+password+"&email="+user.getEmail() +" để reset mật khẩu.");
 			}
 		}
 

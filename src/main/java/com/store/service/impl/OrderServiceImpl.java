@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import com.store.dao.DiscountDao;
 import com.store.dao.OrderDao;
 import com.store.dao.ProductDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +12,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.store.entity.Discount;
 import com.store.entity.Order;
 import com.store.entity.Product;
 import com.store.model.BestSellerModel;
 import com.store.model.CartModel;
 import com.store.model.DetailOrder;
-import com.store.model.OrderModel;
 import com.store.model.StatisticalOrder;
 import com.store.model.StatisticalProductDay;
 import com.store.model.StatisticalRevenue;
@@ -33,9 +30,6 @@ public class OrderServiceImpl implements OrderService{
 
 	@Autowired
     ProductDao productDao;
-	
-	@Autowired
-    DiscountDao discountDao;
 
 	@Override
 	public List<Order> getOrderByName(String code) {
@@ -47,28 +41,13 @@ public class OrderServiceImpl implements OrderService{
 		orderDao.save(order);
 	}
 
-	@Override
-	public List<OrderModel> listOrderHistory() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		String username = ((UserDetails) principal).getUsername();
-
-		List<OrderModel> list = orderDao.listOrderHistory(username);
-
-		for (OrderModel order : list) {
-			String[] date = order.getDate().split("-");
-			String result = date[2] + "/" + date[1] + "/" + date[0];
-			order.setDate(result);
-		}
-
-		return list;
-	}
 
 	@Override
 	public List<Order> listOrderByCodeAndUsername(String id) {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = ((UserDetails) principal).getUsername();
 
-		List<Order> list = orderDao.listOrderByCodeAndUsername(id, username);
+		List<Order> list = new ArrayList<>();
 
 		for (Order order : list) {
 			String[] date = order.getDate().split("-");
@@ -79,19 +58,6 @@ public class OrderServiceImpl implements OrderService{
 		return list;
 	}
 
-	@Override
-	public List<OrderModel> listOrderGroupByCode() {
-		List<OrderModel> listOrder = orderDao.listOrderGroupByCodePending();
-
-		for (OrderModel list : listOrder) {
-			Order order = orderDao.getOrderByName(list.getId()).get(0);
-			if (order != null) {
-				list.setDiscount(order.getDiscount());
-			}
-		}
-
-		return listOrder;
-	}
 
 	@Override
 	public DetailOrder getDetailOrderByCode(String id) {
@@ -102,13 +68,6 @@ public class OrderServiceImpl implements OrderService{
 		detailOrder.setAddress(listOrder.get(0).getAddress().getDetail());
 		detailOrder.setComment(listOrder.get(0).getComment());
 		detailOrder.setDate(listOrder.get(0).getDate());
-
-		Discount discount = listOrder.get(0).getDiscount();
-		if (discount != null) {
-			detailOrder.setDiscount(discount.getPrice());
-		} else {
-			detailOrder.setDiscount(0);
-		}
 
 		detailOrder.setDistrict(listOrder.get(0).getAddress().getDistrict());
 		detailOrder.setFullName(listOrder.get(0).getAddress().getUser().getFullname());
@@ -165,27 +124,6 @@ public class OrderServiceImpl implements OrderService{
 			orderDao.save(list);
 			productDao.save(product);
 		}
-		
-		Discount discount = listOrder.get(0).getDiscount();		
-		if(discount != null) {
-			discount.setQuality(discount.getQuality() + 1);
-			discountDao.save(discount);
-		}
-		
-	}
-
-	@Override
-	public List<OrderModel> listOrderGroupByCodeShipping() {
-		List<OrderModel> listOrder = orderDao.listOrderGroupByCodeShipping();
-
-		for (OrderModel list : listOrder) {
-			Order order = orderDao.getOrderByName(list.getId()).get(0);
-			if (order != null) {
-				list.setDiscount(order.getDiscount());
-			}
-		}
-
-		return listOrder;
 	}
 
 	@Override
@@ -196,35 +134,6 @@ public class OrderServiceImpl implements OrderService{
 			orderDao.save(list);
 		}
 	}
-
-	@Override
-	public List<OrderModel> listOrderGroupByCodeSuccess() {
-		List<OrderModel> listOrder = orderDao.listOrderGroupByCodeSuccess();
-
-		for (OrderModel list : listOrder) {
-			Order order = orderDao.getOrderByName(list.getId()).get(0);
-			if (order != null) {
-				list.setDiscount(order.getDiscount());
-			}
-		}
-
-		return listOrder;
-	}
-
-	@Override
-	public List<OrderModel> listOrderGroupByCodeCancel() {
-		List<OrderModel> listOrder = orderDao.listOrderGroupByCodeCancel();
-
-		for (OrderModel list : listOrder) {
-			Order order = orderDao.getOrderByName(list.getId()).get(0);
-			if (order != null) {
-				list.setDiscount(order.getDiscount());
-			}
-		}
-
-		return listOrder;
-	}
-
 	@Override
 	public void deleteOrder(String id) {
 		List<Order> listOrder = orderDao.getOrderByName(id);
@@ -251,21 +160,6 @@ public class OrderServiceImpl implements OrderService{
 		for (int i = 1; i <= maxDay; i++) {
 			long sum = 0;
 
-			List<OrderModel> listOrder = new ArrayList<OrderModel>();
-			listOrder = orderDao.listStatisticalRevenueDay(i, month, year);
-
-			if (!listOrder.isEmpty()) {
-				for (OrderModel order : listOrder) {
-					Discount discount = order.getDiscount();
-					sum = sum + order.getTotal();
-					if (discount != null) {
-						sum = sum - discount.getPrice();
-					}
-					sum = sum + 50000;
-				}
-
-			}
-
 			double total = (double) sum / 1000000;
 
 			StatisticalRevenue statistical = new StatisticalRevenue();
@@ -282,20 +176,6 @@ public class OrderServiceImpl implements OrderService{
 		List<StatisticalRevenue> listRevenue = new ArrayList<StatisticalRevenue>();
 		for (int i = 1; i <= 12; i++) {
 			long sum = 0;
-			List<OrderModel> listOrder = new ArrayList<OrderModel>();
-			listOrder = orderDao.listStatisticalRevenueMonth(i, year);
-
-			if (!listOrder.isEmpty()) {
-				for (OrderModel order : listOrder) {
-					Discount discount = order.getDiscount();
-					sum = sum + order.getTotal();
-					if (discount != null) {
-						sum = sum - discount.getPrice();
-					}
-					sum = sum + 50000;
-				}
-
-			}
 
 			double total = (double) sum / 1000000;
 
@@ -315,20 +195,6 @@ public class OrderServiceImpl implements OrderService{
 		List<StatisticalRevenue> listRevenue = new ArrayList<StatisticalRevenue>();
 		for (int i = 1; i <= 10; i++) {
 			long sum = 0;
-			List<OrderModel> listOrder = new ArrayList<OrderModel>();
-			listOrder = orderDao.listStatisticalRevenueYear(minYear + i);
-
-			if (!listOrder.isEmpty()) {
-				for (OrderModel order : listOrder) {
-					Discount discount = order.getDiscount();
-					sum = sum + order.getTotal();
-					if (discount != null) {
-						sum = sum - discount.getPrice();
-					}
-					sum = sum + 50000;
-				}
-
-			}
 
 			double total = (double) sum / 1000000;
 
@@ -345,15 +211,10 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public StatisticalTotalOrder getStatisticalTotalOrderOnDay(int day, int month, int year) {
-		List<StatisticalOrder> orderSuccess = orderDao.getMaxOrderSuccessOnDay(day, month, year);
-		List<StatisticalOrder> orderWait = orderDao.getMaxOrderWaitOnDay(day, month, year);
-		List<StatisticalOrder> orderTransport = orderDao.getMaxOrderTransportOnDay(day, month, year);
-		List<StatisticalOrder> orderCancel = orderDao.getMaxOrderCancelOnDay(day, month, year);
-
-		int success = orderSuccess.size();
-		int wait = orderWait.size();
-		int transport = orderTransport.size();
-		int cancel = orderCancel.size();
+		int success = orderDao.getMaxOrderSuccessOnDay(day, month, year);
+		int wait = orderDao.getMaxOrderWaitOnDay(day, month, year);
+		int transport = orderDao.getMaxOrderTransportOnDay(day, month, year);
+		int cancel = orderDao.getMaxOrderCancelOnDay(day, month, year);
 
 		StatisticalTotalOrder totalOrder = new StatisticalTotalOrder(success, cancel, wait, transport);
 
@@ -362,10 +223,10 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public StatisticalTotalOrder getStatisticalTotalOrderOnMonth(int month, int year) {
-		List<StatisticalOrder> orderSuccess = orderDao.getMaxOrderSuccessOnMonth(month, year);
-		List<StatisticalOrder> orderWait = orderDao.getMaxOrderWaitOnMonth(month, year);
-		List<StatisticalOrder> orderTransport = orderDao.getMaxOrderTransportOnMonth(month, year);
-		List<StatisticalOrder> orderCancel = orderDao.getMaxOrderCancelOnMonth(month, year);
+		List<StatisticalOrder> orderSuccess = new ArrayList<>();
+		List<StatisticalOrder> orderWait = new ArrayList<>();
+		List<StatisticalOrder> orderTransport = new ArrayList<>();
+		List<StatisticalOrder> orderCancel = new ArrayList<>();
 
 		int success = orderSuccess.size();
 		int wait = orderWait.size();
@@ -379,10 +240,10 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public StatisticalTotalOrder getStatisticalTotalOrderOnYear(int year) {
-		List<StatisticalOrder> orderSuccess = orderDao.getMaxOrderSuccessOnYear(year);
-		List<StatisticalOrder> orderWait = orderDao.getMaxOrderWaitOnYear(year);
-		List<StatisticalOrder> orderTransport = orderDao.getMaxOrderTransportOnYear(year);
-		List<StatisticalOrder> orderCancel = orderDao.getMaxOrderCancelOnYear(year);
+		List<StatisticalOrder> orderSuccess = new ArrayList<>();
+		List<StatisticalOrder> orderWait = new ArrayList<>();
+		List<StatisticalOrder> orderTransport =new ArrayList<>();
+		List<StatisticalOrder> orderCancel = new ArrayList<>();
 
 		int success = orderSuccess.size();
 		int wait = orderWait.size();
@@ -396,14 +257,8 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public List<Integer> getListYearOrder() {
-		int maxYear = orderDao.getMaxYearOrder();
-		int minYear = orderDao.getMinYearOrder();
 
 		List<Integer> listYear = new ArrayList<Integer>();
-
-		for (int i = minYear; i <= maxYear; i++) {
-			listYear.add(i);
-		}
 
 		return listYear;
 	}

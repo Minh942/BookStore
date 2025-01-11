@@ -16,14 +16,10 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.store.entity.Role;
-import com.store.entity.UserRole;
 import com.store.model.UserRegister;
-import com.store.service.RoleService;
 import com.store.service.SessionService;
-import com.store.service.UserRoleService;
 import com.store.service.UserService;
-import com.store.service.impl.MailerServiceImpl;
+//import com.store.service.impl.MailerServiceImpl;
 import com.store.validator.user.RegisterFormValidator;
 
 @Controller
@@ -40,17 +36,6 @@ public class RegisterController {
 	@Autowired
 	SessionService sessionService;
 
-	// Class cung cap service gui mail
-	@Autowired
-	MailerServiceImpl mailerService;
-
-	// Thong tin role service
-	@Autowired
-	RoleService roleService;
-
-	// Thong tin user role service
-	@Autowired
-	UserRoleService userRoleService;
 
 	/**
 	 * Rang buoc form voi trinh bat loi
@@ -106,7 +91,7 @@ public class RegisterController {
 				int code = (int) Math.floor(((Math.random() * 899999) + 100000));
 				userRegister.setCode(code);
 				// Gui ma xac nhan qua mail
-				mailerService.queue(userRegister.getEmail(), "Xác nhận email!", "Code xác nhận của bạn là: " + code);
+//				mailerService.queue(userRegister.getEmail(), "Xác nhận email!", "Code xác nhận của bạn là: " + code);
 
 				// Luu thong tin vao session user de tien hanh xac nhan ma
 				sessionService.set("user", userRegister);
@@ -158,13 +143,7 @@ public class RegisterController {
 				user.setCreateday(timestamp.toString());
 				user.setSubscribe(userRegister.getSubscribe());
 				userService.save(user);
-				// Tim thong tin role theo roleId
-				Role role = roleService.findRoleById(1);
-				// Them moi mot user co vai tro la ROLE_USER
-				UserRole userRole = new UserRole();
-				userRole.setUser(user);
-				userRole.setRole(role);
-				userRoleService.save(userRole);
+
 				// Xoa thong tin session user cu
 				sessionService.remove("user");
 

@@ -13,44 +13,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.store.entity.Blog;
-import com.store.entity.Manufacturer;
 import com.store.entity.Product;
 import com.store.model.BestSellerModel;
 import com.store.model.ShowProduct;
-import com.store.service.BlogService;
-import com.store.service.CommentService;
-import com.store.service.FavoriteService;
-import com.store.service.ManufacturerService;
 import com.store.service.OrderService;
 import com.store.service.ParamService;
 import com.store.service.ProductService;
-import com.store.service.UserRoleService;
 
 @Controller
 public class IndexController {
-	@Autowired
-	UserRoleService userRoleService;
 
 	@Autowired
 	ProductService productService;
-
-	@Autowired
-	ManufacturerService manufacturerService;
-
-	@Autowired
-	CommentService commentService;
-
-	@Autowired
-	BlogService blogService;
 
 	@Autowired
 	ParamService paramService;
 	
 	@Autowired
 	OrderService orderService;
-	
-	@Autowired
-	FavoriteService favoriteService;
+
 
 	/**
 	 * Hien thi trang chu cua giao dien nguoi dung
@@ -62,12 +43,6 @@ public class IndexController {
 		return Constants.USER_DISPLAY_INDEX;
 	}
 
-	@ModelAttribute("manufacturer")
-	public List<Manufacturer> manufacture(Model model) {
-		List<Manufacturer> list = manufacturerService.findAll();
-		return list;
-	}
-
 	@ModelAttribute("latestProduct")
 	public List<List<ShowProduct>> getLatestProduct(Model model) {
 		List<Product> list = productService.getListLatestProduct();
@@ -77,7 +52,7 @@ public class IndexController {
 		List<List<ShowProduct>> result = new ArrayList<List<ShowProduct>>();
 
 		for (int i = 0; i < list.size(); i++) {
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(list.get(i).getNamesearch());
+			int totalStar = 1;
 
 			ShowProduct showProduct = new ShowProduct();
 			showProduct.setProduct(list.get(i));
@@ -105,7 +80,7 @@ public class IndexController {
 
 		for (Product product : list) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(product.getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(product);
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);
@@ -116,11 +91,7 @@ public class IndexController {
 
 	@ModelAttribute("listBlog")
 	public List<Blog> getListBlog(Model model) {
-		List<Blog> listBlog = blogService.getSixBlog();
-		for (Blog blog : listBlog) {
-			String uploadDay = paramService.convertDate(blog.getUploadday());
-			blog.setUploadday(uploadDay);
-		}
+		List<Blog> listBlog = new ArrayList<>();
 		return listBlog;
 	}
 
@@ -132,7 +103,7 @@ public class IndexController {
 
 		for (Product product : list) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(product.getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(product);
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);
@@ -151,7 +122,7 @@ public class IndexController {
 		
 		for(BestSellerModel bestSeller: list) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(bestSeller.getProduct().getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(bestSeller.getProduct());
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);
@@ -162,13 +133,13 @@ public class IndexController {
 	@ModelAttribute("listFavorite")
 	public List<ShowProduct> demo(Model model) {
 		Pageable topFour = PageRequest.of(0, 4);
-		List<BestSellerModel> list = favoriteService.getListBestSellerProduct(topFour);
+		List<BestSellerModel> list = new ArrayList<>();
 		
 		List<ShowProduct> listProduct = new ArrayList<ShowProduct>();
 		
 		for(BestSellerModel bestSeller: list) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(bestSeller.getProduct().getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(bestSeller.getProduct());
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);

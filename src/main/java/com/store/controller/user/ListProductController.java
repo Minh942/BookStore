@@ -17,12 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.store.entity.Category;
-import com.store.entity.Manufacturer;
 import com.store.model.BestSellerModel;
 import com.store.model.ShowProduct;
 import com.store.service.CategoryService;
-import com.store.service.CommentService;
-import com.store.service.ManufacturerService;
 import com.store.service.OrderService;
 import com.store.service.ProductService;
 import com.store.service.SessionService;
@@ -39,13 +36,7 @@ public class ListProductController {
 	SessionService sessionService;
 
 	@Autowired
-	ManufacturerService manufacturerService;
-
-	@Autowired
 	OrderService orderService;
-
-	@Autowired
-	CommentService commentService;
 
 	@GetMapping("/danh-sach/{nameSearch}")
 	public String index(@PathVariable("nameSearch") String nameSearch, Model model,
@@ -130,11 +121,6 @@ public class ListProductController {
 		return Constants.USER_DISPLAY_LIST_PRODUCT_BY_SEARCH;
 	}
 
-	@ModelAttribute("listManu")
-	public List<Manufacturer> listManu() {
-		List<Manufacturer> list = manufacturerService.findAll();
-		return list;
-	}
 
 	@ModelAttribute("listBestSeller")
 	public List<ShowProduct> getListBestSeller(Model model) {
@@ -146,8 +132,7 @@ public class ListProductController {
 
 		for (BestSellerModel bestSeller : list) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService
-					.getAllStarCommentByProductNameSearch(bestSeller.getProduct().getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(bestSeller.getProduct());
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);

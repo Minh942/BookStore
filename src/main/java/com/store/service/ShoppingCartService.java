@@ -2,7 +2,6 @@ package com.store.service;
 
 import java.util.Collection;
 
-import com.store.entity.Discount;
 import com.store.model.CartModel;
 
 public interface ShoppingCartService {
@@ -14,7 +13,5 @@ public interface ShoppingCartService {
 	int getCount();
 	int getCountAllProduct();
 	double getAmount();
-	void addDiscount(Integer id, Discount entity);
-	Discount getDiscount();
 	void clearDiscount();
 }

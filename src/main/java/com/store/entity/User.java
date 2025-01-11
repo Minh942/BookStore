@@ -57,23 +57,9 @@ public class User implements Serializable {
 	// Thong tin nguoi xoa
 	private int Persondelete;
 
-	// Danh sach User Role
-	@JsonIgnore
-	@OneToMany(mappedBy = "user")
-	List<UserRole> listUserRole;
-
-	// Danh sach Employee
-	// @JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-	List<Employee> listEmployee;
-	
 	// Danh sach dia chi
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	List<Address> listAddress;
 
-	// Danh sach yeu thich
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-	List<Favorite> listFavorite;
 }

@@ -8,7 +8,6 @@ import com.store.entity.Order;
 import com.store.entity.Product;
 import com.store.model.BestSellerModel;
 import com.store.model.DetailOrder;
-import com.store.model.OrderModel;
 import com.store.model.StatisticalProductDay;
 import com.store.model.StatisticalRevenue;
 import com.store.model.StatisticalTotalOrder;
@@ -19,11 +18,8 @@ public interface OrderService {
 
 	void save(Order order);
 
-	List<OrderModel> listOrderHistory();
 
 	List<Order> listOrderByCodeAndUsername(String id);
-
-	List<OrderModel> listOrderGroupByCode();
 
 	DetailOrder getDetailOrderByCode(String id);
 
@@ -31,13 +27,7 @@ public interface OrderService {
 
 	void cancelOrder(String id);
 
-	List<OrderModel> listOrderGroupByCodeShipping();
-
 	void shippedOrder(String id);
-
-	List<OrderModel> listOrderGroupByCodeSuccess();
-
-	List<OrderModel> listOrderGroupByCodeCancel();
 
 	void deleteOrder(String id);
 

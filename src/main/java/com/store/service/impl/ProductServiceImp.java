@@ -13,7 +13,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import com.store.dao.CategoryDao;
-import com.store.dao.ManufacturerDao;
 import com.store.dao.ProductDao;
 import com.store.dao.UserDao;
 import com.store.entity.User;
@@ -26,11 +25,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.store.entity.Category;
-import com.store.entity.Manufacturer;
 import com.store.entity.Product;
 import com.store.model.ProductModel;
 import com.store.model.ShowProduct;
-import com.store.service.CommentService;
 import com.store.service.ProductService;
 
 @Service
@@ -41,14 +38,9 @@ public class ProductServiceImp implements ProductService {
 	@Autowired
     UserDao userDao;
 
-	@Autowired
-    ManufacturerDao manufacturerDao;
 
 	@Autowired
     CategoryDao categoryDao;
-
-	@Autowired
-	CommentService commentService;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -67,23 +59,15 @@ public class ProductServiceImp implements ProductService {
 		product.setPrice(productModel.getPrice());
 		product.setQuality(productModel.getQuality());
 		product.setDescription(productModel.getDescription());
-		product.setSpecification(productModel.getSpecification());
 		product.setImage1(productModel.getImage1());
 		product.setImage2(productModel.getImage2());
 		product.setImage3(productModel.getImage3());
-		product.setImage4(productModel.getImage4());
-		product.setImage5(productModel.getImage5());
-		product.setActive(productModel.isActive());
-		product.setNamesearch(productModel.getNameSearch());
-		product.setCreateday(timestamp.toString());
-		product.setPersoncreate(temp.getId());
+
 		product.setSales(productModel.getSales());
 
-		Manufacturer manufacturer = manufacturerDao.findById(productModel.getManuId()).get();
 		Category category = categoryDao.findById(productModel.getCateId()).get();
 
 		product.setCategory(category);
-		product.setManufacturer(manufacturer);
 
 		productDao.save(product);
 
@@ -99,12 +83,9 @@ public class ProductServiceImp implements ProductService {
 	public void delete(Integer id) {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = ((UserDetails) principal).getUsername();
-		User temp = userDao.findUserByEmail(username);
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 		Product product = productDao.findById(id).get();
-		product.setDeleteday(timestamp.toString());
-		product.setPersondelete(temp.getId());
+
 		productDao.save(product);
 	}
 
@@ -123,23 +104,16 @@ public class ProductServiceImp implements ProductService {
 		product.setPrice(productModel.getPrice());
 		product.setQuality(productModel.getQuality());
 		product.setDescription(productModel.getDescription());
-		product.setSpecification(productModel.getSpecification());
 		product.setImage1(productModel.getImage1());
 		product.setImage2(productModel.getImage2());
 		product.setImage3(productModel.getImage3());
-		product.setImage4(productModel.getImage4());
-		product.setImage5(productModel.getImage5());
-		product.setActive(productModel.isActive());
-		product.setNamesearch(productModel.getNameSearch());
+
 		product.setUpdateday(timestamp.toString());
-		product.setPersonupdate(temp.getId());
 		product.setSales(productModel.getSales());
 
-		Manufacturer manufacturer = manufacturerDao.findById(productModel.getManuId()).get();
 		Category category = categoryDao.findById(productModel.getCateId()).get();
 
 		product.setCategory(category);
-		product.setManufacturer(manufacturer);
 
 		productDao.save(product);
 		return productModel;
@@ -157,14 +131,9 @@ public class ProductServiceImp implements ProductService {
 		productModel.setImage1(product.getImage1());
 		productModel.setImage2(product.getImage2());
 		productModel.setImage3(product.getImage3());
-		productModel.setImage4(product.getImage4());
-		productModel.setImage5(product.getImage5());
-		productModel.setNameSearch(product.getNamesearch());
-		productModel.setActive(product.isActive());
-		productModel.setManuId(product.getManufacturer().getId());
+
 		productModel.setCateId(product.getCategory().getId());
 		productModel.setDescription(product.getDescription());
-		productModel.setSpecification(product.getSpecification());
 		productModel.setSales(product.getSales());
 		return productModel;
 	}
@@ -221,10 +190,6 @@ public class ProductServiceImp implements ProductService {
 			preStatus = cb.notEqual(from.get("sales"), 0);
 		}
 
-		Predicate preActive = cb.equal(from.get("active"), 1);
-		// Predicate preActive = cb.equal(from.get("active"), 1);
-		Predicate preDeleteDay = cb.isNull(from.get("Deleteday"));
-
 		int check = 0;
 		Predicate prePrice = null;
 		Predicate preManu = null;
@@ -257,16 +222,6 @@ public class ProductServiceImp implements ProductService {
 			} else {
 				check = 2;
 			}
-		}
-
-		if (check == 1) {
-			cq.where(prePrice, preActive, preDeleteDay, preStatus);
-		} else if (check == 2) {
-			cq.where(preManu, preActive, preDeleteDay, preStatus);
-		} else if (check == 3) {
-			cq.where(prePrice, preManu, preActive, preDeleteDay, preStatus);
-		} else {
-			cq.where(preActive, preDeleteDay, preStatus);
 		}
 
 		if (sort != null) {
@@ -302,7 +257,7 @@ public class ProductServiceImp implements ProductService {
 
 		for (Product product : getAllItems) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(product.getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(product);
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);
@@ -326,8 +281,7 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public void updateView(String nameSearch) {
 		Product product = productDao.getProductByNameSearch(nameSearch);
-		int view = product.getViews();
-		product.setViews(view + 1);
+
 		productDao.save(product);
 	}
 

@@ -44,14 +44,10 @@ public class Product implements Serializable{
 	// Thong tin so luong san pham
 	private int quality;
 
-	// Thong tin so luot xem
-	private int views;
 
 	// Mo ta san pham
 	private String description;
 
-	// Thong tin cac thong so
-	private String specification;
 
 	// Thong tin hinh anh 1
 	private String image1;
@@ -62,43 +58,11 @@ public class Product implements Serializable{
 	// Thong tin hinh anh 3
 	private String image3;
 
-	// Thong tin hinh anh 4
-	private String image4;
-
-	// Thong tin hinh anh 5
-	private String image5;
-
-	// Hien thi san pham hay khong
-	private boolean active;
-	
 	// Thong tin gia khuyen mai
 	private int sales;
-	
-	// Hien thi ten dung de tim kiem
-	private String Namesearch;
-	
-	// Thong tin ngay tao
-	private String Createday;
-
-	// Thong tin ma nguoi tao
-	private int Personcreate;
-
-	// Thong tin ngay xoa
-	private String Deleteday;
-
-	// Thong tin nguoi xoa
-	private int Persondelete;
 
 	// Thong tin ngay cap nhat
 	private String Updateday;
-
-	// Thong tin ma nguoi cap nhat
-	private int Personupdate;
-
-	// Thong tin nha san xuat
-	@ManyToOne
-	@JoinColumn(name = "Manu_Id")
-	Manufacturer manufacturer;
 
 	// Thong tin danh muc
 	@ManyToOne
@@ -108,12 +72,5 @@ public class Product implements Serializable{
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "product")
 	List<Order> listOrder;
-	
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "product")
-	List<Favorite> listFavorite;
-	
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "product")
-	List<Comment> listComment;
+
 }

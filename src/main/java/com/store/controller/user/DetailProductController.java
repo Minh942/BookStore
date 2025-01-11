@@ -23,7 +23,6 @@ import com.store.model.BestSellerModel;
 import com.store.model.CartModel;
 import com.store.model.ShowProduct;
 import com.store.service.CategoryService;
-import com.store.service.CommentService;
 import com.store.service.OrderService;
 import com.store.service.ProductService;
 import com.store.service.SessionService;
@@ -38,9 +37,7 @@ public class DetailProductController {
 	
 	@Autowired
 	SessionService sessionService;
-	
-	@Autowired
-	CommentService commentService;
+
 
 	@Autowired
     ShoppingCartServiceImpl cartService;
@@ -99,7 +96,7 @@ public class DetailProductController {
 
 		for (Product item : list) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(item.getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(item);
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);
@@ -110,13 +107,13 @@ public class DetailProductController {
 
 	@ModelAttribute("countComment")
 	public int countComment(@PathVariable("nameSearch") String nameSearch) {
-		int result = commentService.getCountCommentByProductNameSearch(nameSearch);
+		int result =5;
 		return result;
 	}
 
 	@ModelAttribute("totalStar")
 	public int totalStar(@PathVariable("nameSearch") String nameSearch) {
-		int result = commentService.getAllStarCommentByProductNameSearch(nameSearch);
+		int result = 5;
 		return result;
 	}
 	
@@ -130,7 +127,7 @@ public class DetailProductController {
 		
 		for(BestSellerModel bestSeller: list) {
 			ShowProduct showProduct = new ShowProduct();
-			int totalStar = commentService.getAllStarCommentByProductNameSearch(bestSeller.getProduct().getNamesearch());
+			int totalStar = 5;
 			showProduct.setProduct(bestSeller.getProduct());
 			showProduct.setTotalStar(totalStar);
 			listProduct.add(showProduct);
