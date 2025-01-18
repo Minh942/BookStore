@@ -1,5 +1,6 @@
 package com.store.entity;
 
+import jakarta.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 
 
 @SuppressWarnings("serial")
+@ViewScoped
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

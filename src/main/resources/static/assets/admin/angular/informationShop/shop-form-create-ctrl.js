@@ -56,65 +56,6 @@ $(document).ready(function () {
     handlerButtonSave();
   });
 
-  $("#phone").keyup(function () {
-    var phone = this.value;
-    if (phone == "") {
-      $("#phone").addClass("is-invalid");
-      $("#showErrorPhone").text("Vui lòng nhập số điện thoại!");
-      checkPhone = 10;
-    } else {
-      if (isVietnamesePhoneNumber(phone) == false) {
-        $("#phone").addClass("is-invalid");
-        $("#showErrorPhone").text("Số điện thoại không đúng định dạng!");
-        checkPhone = 10;
-      } else {
-        $("#phone").removeClass("is-invalid");
-        $("#showErrorPhone").text("");
-        checkPhone = 1;
-      }
-    }
-    handlerButtonSave();
-  });
-
-  $("#fax").keyup(function () {
-    var fax = this.value;
-    if (fax == "") {
-      $("#fax").addClass("is-invalid");
-      $("#showErrorFax").text("Vui lòng nhập số fax!");
-      checkFax = 10;
-    } else {
-      if (isVietnamesePhoneNumber(fax) == false) {
-        $("#fax").addClass("is-invalid");
-        $("#showErrorFax").text("Fax không đúng định dạng!");
-        checkFax = 10;
-      } else {
-        $("#fax").removeClass("is-invalid");
-        $("#showErrorFax").text("");
-        checkFax = 1;
-      }
-    }
-    handlerButtonSave();
-  });
-
-  $("#email").keyup(function () {
-    var email = this.value;
-    if (email == "") {
-      $("#email").addClass("is-invalid");
-      $("#showErrorEmail").text("Vui lòng nhập Email!");
-      checkEmail = 10;
-    } else {
-      if (isValidEmail(email) == false) {
-        $("#email").addClass("is-invalid");
-        $("#showErrorEmail").text("Email không đúng định dạng!");
-        checkEmail = 10;
-      } else {
-        $("#email").removeClass("is-invalid");
-        $("#showErrorEmail").text("");
-        checkEmail = 1;
-      }
-    }
-    handlerButtonSave();
-  });
 
   $("#chooseLogo").change(function () {
     var logo = this.value;

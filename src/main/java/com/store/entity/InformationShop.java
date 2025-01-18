@@ -1,5 +1,6 @@
 package com.store.entity;
 
+import jakarta.faces.view.ViewScoped;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@ViewScoped
 @SuppressWarnings("serial")
 @Data
 @NoArgsConstructor

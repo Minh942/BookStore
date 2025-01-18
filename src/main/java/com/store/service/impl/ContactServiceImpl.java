@@ -35,7 +35,6 @@ public class ContactServiceImpl implements ContactService {
 		contact.setName(contactModel.getName());
 		contact.setEmail(contactModel.getEmail());
 		contact.setContent(contactModel.getContent());
-		String name = contactModel.getName();
 		contact.setDate(strDate);
 		contact.setStatus("0");
 		dao.save(contact);
